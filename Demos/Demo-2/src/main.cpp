@@ -33,13 +33,16 @@ void setup()
     pinMode(RED_LIGHT, OUTPUT);
     pinMode(YELLOW_LIGHT, OUTPUT);
     pinMode(GREEN_LIGHT, OUTPUT);
-    tl_state = RED_STATE;
-    tl_timer = millis() + RED_TIMER;
-    buzzer_timer = millis() + RED_BUZZER_ON;
-    from_green = 0;
+    tl_state = GREEN_STATE;
+    Serial.begin(9600);
+    tl_timer = 0;
+    buzzer_timer = millis() + GREEN_BUZZER_ON;
     buzzer_state = 0;
+    digitalWrite(BUZZER_PIN, HIGH);
     // put your setup code here, to run once:
 }
+// DEBUG functions 
+//-----------------------------------------------------------
 void turn_all_leds_on()
 {
     digitalWrite(RED_LIGHT, HIGH);
@@ -52,8 +55,101 @@ void turn_all_leds_off()
     digitalWrite(YELLOW_LIGHT, LOW);
     digitalWrite(GREEN_LIGHT, LOW);    
 }
+//----------------------------------------------------------
 void loop() 
 {
+    switch(tl_state)
+    {
+        case GREEN_STATE:
+        {
+            if(millis()>buzzer_timer && buzzer_state == 0)
+            {
+                //Serial.println("BUZZER OFF");
+                //Serial.println(millis() - buzzer_timer);
+                 buzzer_state =1;
+                 buzzer_timer = millis() + GREEN_BUZZER_OFF;
+                 digitalWrite(BUZZER_PIN, LOW);
+            }
+            if(millis() > buzzer_timer && buzzer_state == 1)
+            {
+                //Serial.print("BUZZER ON");
+                //Serial.print(millis() - buzzer_timer);
+                buzzer_state = 0;
+                buzzer_timer = millis() + GREEN_BUZZER_ON;
+                digitalWrite(BUZZER_PIN, HIGH);
+            }
+            digitalWrite(GREEN_LIGHT, HIGH);
+            if(digitalRead(BUTTON_PIN))
+            {
+                delay(5000);
+                tl_state = YELLOW_STATE;
+                digitalWrite(GREEN_LIGHT, LOW);
+                tl_timer = millis()+YELLOW_RED_YELLOW_TIMER;
+                digitalWrite(BUZZER_PIN, LOW);
+            }
+            break;
+            
+        }
+
+        case YELLOW_STATE:
+        {
+            digitalWrite(YELLOW_LIGHT, HIGH);
+            if(millis() > tl_timer)
+            {
+                digitalWrite(YELLOW_LIGHT, LOW);
+                    tl_timer = millis() + RED_TIMER;
+                    tl_state = RED_STATE;
+                    buzzer_timer = millis()+ 250;
+                    buzzer_state = 0;
+                    digitalWrite(BUZZER_PIN, HIGH);
+            }
+            break;
+        }
+        case RED_STATE:
+        {
+
+            digitalWrite(RED_LIGHT, HIGH);
+            if(millis() > buzzer_timer && buzzer_state == 0)
+            {
+
+                buzzer_state =1;
+                buzzer_timer = millis() + RED_BUZZER_OFF;
+                digitalWrite(BUZZER_PIN, LOW);
+            }
+            if(millis() > buzzer_timer && buzzer_state == 1)
+            {
+                buzzer_state = 0;
+                buzzer_timer = millis() + RED_BUZZER_ON;
+                digitalWrite(BUZZER_PIN, HIGH);
+            }
+            if(digitalRead(BUTTON_PIN))
+            {
+                tl_timer =millis()+ RED_TIMER;
+            }
+            if(millis() > tl_timer)
+            {
+                digitalWrite(RED_LIGHT, LOW);
+                tl_timer = millis() + YELLOW_RED_YELLOW_TIMER;
+                tl_state = RED_YELLOW_STATE;              
+            }
+            break;
+        }
+        case RED_YELLOW_STATE:
+        {
+            digitalWrite(RED_LIGHT, HIGH);
+            digitalWrite(YELLOW_LIGHT, HIGH);
+            if(millis() > tl_timer)
+            {
+                digitalWrite(RED_LIGHT, LOW);
+                digitalWrite(YELLOW_LIGHT, LOW);
+                //tl_timer = millis()+ YELLOW_RED_YELLOW_TIMER;
+                tl_state = GREEN_STATE;
+                digitalWrite(BUZZER_PIN, HIGH);
+            }
+            break;
+        }
+    }
+    /*
     switch(tl_state)
     {
         case RED_STATE:
@@ -128,6 +224,7 @@ void loop()
         case GREEN_STATE:
         {
             digitalWrite(GREEN_LIGHT, HIGH);
+            GREEN
             if(digitalRead(BUTTON_PIN))
             {
                 tl_timer = millis() + MIN_GREEN_TIMER;
@@ -140,7 +237,7 @@ void loop()
                 tl_state = YELLOW_STATE;
             }
         }
-    }
+    }*/
     // if(digitalRead(BUTTON_PIN))
     // {
     //     turn_all_leds_on();
