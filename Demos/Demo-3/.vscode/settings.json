@@ -1,0 +1,6 @@
+{
+    "terminal.integrated.env.linux": {
+        "PATH": "/home/kkdave/.platformio/penv/bin:/home/kkdave/.platformio/penv:/home/kkdave/bin:/home/kkdave/.local/bin:/home/kkdave/bin:/home/kkdave/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/kkdave/Shell-Scripts",
+        "PLATFORMIO_CALLER": "vscode"
+    }
+}
